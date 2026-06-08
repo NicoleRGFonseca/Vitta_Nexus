@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+     <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+    <script src="https://assets.calendly.com/assets/external/widget.js" defer></script>
+
+     <title>Vitta Nexus</title>
+     <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="cabecalho">
+        <div class="navbar">
+            <img src="vitta_nexus_transparent.png" alt="Logo da Vitta Nexus" class="logo-img">
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#especialidades">Especialidades</a></li>
+                    <li><a href="#" onclick="abrirLogin()">Login</a></li>
+                    <li><a href="#" onclick="abrirCadastro()">Cadastro</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <center>  
+        <section class="hero">
+    
+    <div class="hero-texto">
+
+        <h1>
+            Agende suas consultas de forma
+            <span>rápida e segura</span>
+        </h1>
+
+        <p>
+            Com a Vitta Nexus você encontra especialistas,
+            agenda consultas online e recebe lembretes automáticos.
+        </p>
+
+        <button>AGENDAR AGORA</button>
+
+    </div>
+
+    <div class="hero-imagem">
+        <img src="medica.png" alt="Médica">
+    </div>
+
+</section>
+        
+        <section id="vantagens">
+    <h2>Por que escolher a Vitta Nexus?</h2>
+
+    <div class="beneficios">
+
+        <div class="beneficio">
+            <h3>📅 Agendamento Online</h3>
+            <p>Marque consultas de forma rápida e prática.</p>
+        </div>
+
+        <div class="beneficio">
+            <h3>🔔 Lembretes Automáticos</h3>
+            <p>Receba notificações para não esquecer suas consultas.</p>
+        </div>
+
+        <div class="beneficio">
+            <h3>🔒 Segurança dos Dados</h3>
+            <p>Proteção das informações dos pacientes.</p>
+        </div>
+
+        <div class="beneficio">
+            <h3>📱 Acesso em Qualquer Lugar</h3>
+            <p>Acesse pelo celular, tablet ou computador.</p>
+        </div>
+
+        <div class="beneficio">
+            <h3>👩‍⚕️ Especialistas Qualificados</h3>
+            <p>Profissionais preparados para oferecer o melhor atendimento.</p>
+        </div>
+
+        <div class="beneficio">
+            <h3>⚡ Atendimento Ágil</h3>
+            <p>Menos espera e mais praticidade para os pacientes.</p>
+        </div>
+
+        <div class="beneficio">
+            <h3>📋 Histórico Organizado</h3>
+            <p>Acompanhe seus agendamentos de forma simples.</p>
+        </div>
+
+        <div class="beneficio">
+            <h3>💙 Atendimento Humanizado</h3>
+            <p>Cuidamos da sua saúde com atenção e dedicação.</p>
+        </div>
+
+    </div>
+</section>
+
+        <section id="especialidades">
+            <h2>Nossas Especialidades</h2>
+       
+            <!-- Card 1: Cardiologia -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="cardiologia.jpg" alt="Descrição da imagem">
+                </div>
+                <div class="card-conteiner">
+                    <h2>Cardiologia</h2>
+                    <p> Dra. Nicole</p>
+                    <a href="#" class="calendly-card" onclick="tentarAgendar(event, 'https://calendly.com/vitta-nexus00')"><h2>Agendar</h2></a>
+                </div>
+            </div>
+
+            <!-- Card 2: Neurologia -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="neurologia.jpg" alt="Descrição da imagem">
+                </div>
+                <div class="card-conteiner">
+                    <h2>Neurologia</h2>
+                    <p> Dra. Nathalya</p>
+                    <a href="#" class="calendly-card" onclick="tentarAgendar(event, 'https://calendly.com/vitta-nexus00')"><h2>Agendar</h2></a>
+                </div>
+            </div>
+
+            <!-- Card 3: Pediatria -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="Pediatra.jpg" alt="Descrição da imagem">
+                </div>
+                <div class="card-conteiner">
+                    <h2>Pediatra</h2>
+                    <p> Dra. Byanca</p>
+                    <a href="#" class="calendly-card" onclick="tentarAgendar(event, 'https://calendly.com/vitta-nexus00')"><h2>Agendar</h2></a>
+                </div>
+            </div>
+        </section>
+        <br>
+
+        <section id="convenios">
+    <h2>Convênios Aceitos</h2>
+
+    <ul>
+        <li>Unimed</li>
+        <li>Bradesco Saúde</li>
+        <li>Amil</li>
+        <li>SulAmérica</li>
+    </ul>
+</section>
+
+
+        <br>
+  
+        <!-- Modal de Login -->
+        <div id="modalLogin" class="modal">
+            <div class="modal-box">
+                <h2>Login</h2>
+                <form id="formLogin" onsubmit="efetuarLogin(event)">
+                    <input type="email" id="loginEmail" placeholder="E-mail" required>
+                    <input type="password" id="loginSenha" placeholder="Senha" required>
+                    <button type="submit" class="btn">Entrar</button>
+                </form>
+                <p style="margin-top: 15px; font-size: 14px;">
+                    Não tem uma conta? <a href="#" onclick="alternarParaCadastro()" style="color: #007bff; text-decoration: underline;">Cadastre-se aqui</a>
+                </p>
+                <button class="btn close-btn" onclick="fecharModal('modalLogin')">Fechar</button>
+            </div>
+        </div>
+
+        <!-- Modal de Cadastro -->
+        <div id="modalCadastro" class="modal">
+            <div class="modal-box">
+                <h2>Cadastro de Usuários</h2>
+                <form id="formCadastro" onsubmit="efetuarCadastro(event)">
+                    <input type="text" id="nome" placeholder="Nome" required>
+                    <input type="text" id="cpf" placeholder="CPF" maxlength="14" required>
+                    <input type="text" id="celular" placeholder="Celular" maxlength="15" required>
+                    <input type="email" id="e-mail" placeholder="Email" maxlength="60" required>
+                    <input type="password" id="senha" placeholder="Senha" required>
+                    <input type="text" id="cep" placeholder="00000-000" maxlength="9" onblur="pesquisacep(this.value)" required>
+                    
+                    <!-- Mudado de 'disabled' para 'readonly' para evitar travamento na leitura do JS -->
+                    <input type="text" id="rua" placeholder="Rua" readonly>
+                    <input type="text" id="cidade" placeholder="Cidade" readonly>
+                    <input type="text" id="uf" placeholder="UF" readonly>
+                    
+                    <button type="submit" class="btn">Cadastrar</button>
+                    <div class="mensagem" id="mensagemSucesso" style="display:none; color: green; font-weight: bold; margin-top: 10px;">Dados enviados com sucesso!</div>
+                </form>
+                <button class="btn close-btn" onclick="fecharModal('modalCadastro')" style="margin-top: 10px;">Fechar</button>
+            </div>
+        </div>
+
+    <script>
+       
+        // 1. VARIÁVEIS DE CONTROLE E RECONHECIMENTO
+        
+        let estaLogado = false;
+let linkCalendlyPendente = null;
+
+// Verifica se já existe usuário salvo
+const usuarioSalvo = localStorage.getItem("usuarioVittaNexus");
+
+if (usuarioSalvo) {
+    estaLogado = true;
+    const usuario = JSON.parse(usuarioSalvo);
+    console.log("Usuário carregado:", usuario.nome);
+}
+
+
+// MODAIS
+
+
+function abrirLogin() {
+    document.getElementById("modalLogin").style.display = "flex";
+}
+
+function abrirCadastro() {
+    document.getElementById("modalCadastro").style.display = "flex";
+}
+
+function fecharModal(idModal) {
+    document.getElementById(idModal).style.display = "none";
+}
+
+function irParaCadastro() {
+    fecharModal("modalLogin");
+    abrirCadastro();
+}
+
+
+// AGENDAMENTO
+
+
+function tentarAgendar(evento, linkCalendly) {
+    evento.preventDefault();
+
+    if (estaLogado) {
+        Calendly.initPopupWidget({ url: linkCalendly });
+    } else {
+        linkCalendlyPendente = linkCalendly;
+        alert("Faça login ou cadastre-se para concluir o agendamento.");
+        abrirLogin();
+    }
+}
+
+
+// LOGIN
+
+
+function efetuarLogin(evento) {
+    evento.preventDefault();
+
+    const emailInformado = document.getElementById("loginEmail").value;
+    const senhaInformada = document.getElementById("loginSenha").value;
+
+    const usuarioSalvo = localStorage.getItem("usuarioVittaNexus");
+
+    if (!usuarioSalvo) {
+        alert("Nenhum usuário cadastrado neste navegador.");
+        return;
+    }
+
+    const usuario = JSON.parse(usuarioSalvo);
+
+    const emailCorreto = emailInformado === usuario.email;
+    const senhaCorreta = senhaInformada === usuario.senha;
+
+    if (emailCorreto && senhaCorreta) {
+        estaLogado = true;
+        fecharModal("modalLogin");
+
+        abrirAgendamentoPendente();
+    } else {
+        alert("E-mail ou senha incorretos!");
+    }
+}
+
+
+// CADASTRO
+
+
+function efetuarCadastro(evento) {
+    evento.preventDefault();
+
+    const cpfDigitado = document.getElementById("cpf").value;
+
+    if (!validarCPF(cpfDigitado)) {
+        alert("CPF inválido!");
+        return;
+    }
+
+    const novoUsuario = {
+        nome: document.getElementById("nome").value,
+        cpf: document.getElementById("cpf").value,
+        celular: document.getElementById("celular").value,
+        email: document.getElementById("e-mail").value,
+        cep: document.getElementById("cep").value,
+        rua: document.getElementById("rua").value,
+        cidade: document.getElementById("cidade").value,
+        uf: document.getElementById("uf").value,
+        senha: document.getElementById("senha").value
+    };
+
+    localStorage.setItem("usuarioVittaNexus", JSON.stringify(novoUsuario));
+
+    estaLogado = true;
+
+    document.getElementById("mensagemSucesso").style.display = "block";
+
+    setTimeout(function () {
+        fecharModal("modalCadastro");
+        document.getElementById("formCadastro").reset();
+        document.getElementById("mensagemSucesso").style.display = "none";
+
+        abrirAgendamentoPendente();
+    }, 1500);
+}
+
+
+// ABRIR AGENDAMENTO DEPOIS DO LOGIN/CADASTRO
+
+
+function abrirAgendamentoPendente() {
+    if (linkCalendlyPendente) {
+        Calendly.initPopupWidget({ url: linkCalendlyPendente });
+        linkCalendlyPendente = null;
+    } else {
+        alert("Sessão iniciada com sucesso!");
+    }
+}
+
+
+// MÁSCARAS
+
+
+document.getElementById("cpf").addEventListener("input", function (evento) {
+    let cpf = evento.target.value.replace(/\D/g, "");
+
+    cpf = cpf
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+    evento.target.value = cpf;
+});
+
+document.getElementById("celular").addEventListener("input", function (evento) {
+    let celular = evento.target.value.replace(/\D/g, "");
+
+    celular = celular
+        .replace(/^(\d{2})(\d)/g, "($1) $2")
+        .replace(/(\d{5})(\d{1,4})$/, "$1-$2");
+
+    evento.target.value = celular;
+});
+
+
+// VALIDAÇÃO DE CPF
+
+
+function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, "");
+
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
+        return false;
+    }
+
+    let soma = 0;
+    let resto;
+
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+
+    resto = (soma * 10) % 11;
+
+    if (resto === 10 || resto === 11) {
+        resto = 0;
+    }
+
+    if (resto !== parseInt(cpf.substring(9, 10))) {
+        return false;
+    }
+
+    soma = 0;
+
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+
+    resto = (soma * 10) % 11;
+
+    if (resto === 10 || resto === 11) {
+        resto = 0;
+    }
+
+    return resto === parseInt(cpf.substring(10, 11));
+}
+
+
+// BUSCAR CEP
+
+
+function preencherEndereco(dadosCep) {
+    if (!("erro" in dadosCep)) {
+        document.getElementById("rua").value = dadosCep.logradouro;
+        document.getElementById("cidade").value = dadosCep.localidade;
+        document.getElementById("uf").value = dadosCep.uf;
+    } else {
+        alert("CEP não encontrado.");
+    }
+}
+
+function pesquisarCep(valorDigitado) {
+    const cep = valorDigitado.replace(/\D/g, "");
+
+    if (cep !== "") {
+        const script = document.createElement("script");
+        script.src = "https://viacep.com.br/ws/" + cep + "/json/?callback=preencherEndereco";
+        document.body.appendChild(script);
+    }
+}
+</script>
+       <footer>
+    <div class="footer-item">
+        <h3>📞 Fale Conosco</h3>
+        <p>(21) 98679-4585</p>
+    </div>
+
+    <div class="footer-item">
+        <h3>✉️ E-mail</h3>
+        <p>vittanexus@gmail.com</p>
+    </div>
+
+    <div class="footer-item">
+        <h3>📸 Instagram</h3>
+        <p>@vittanexus</p>
+    </div>
+</footer>
+
+<div class="copyright">
+    © 2026 Vitta Nexus - Projeto Acadêmico de Desenvolvimento Web.
+</div>
+</body>
+</html>
+

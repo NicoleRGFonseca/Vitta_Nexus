@@ -1,0 +1,503 @@
+   /* ==========================
+   CABEÇALHO PROFISSIONAL
+========================== */
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+
+}
+
+.cabecalho {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    height: 80px;
+
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+
+    border-bottom: 1px solid #e8e8e8;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+}
+
+.navbar {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+    padding: 0 30px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-img {
+    height: 180px;
+    width: auto;
+
+    transition: 0.3s;
+}
+
+.logo-img:hover {
+    transform: scale(1.03);
+}
+
+.cabecalho ul {
+    list-style: none;
+
+    display: flex;
+    align-items: center;
+
+    gap: 35px;
+
+    margin: 0;
+    padding: 0;
+}
+
+.cabecalho li {
+    display: flex;
+    align-items: center;
+}
+
+.cabecalho a {
+    color: #2c3e50;
+
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+
+    position: relative;
+
+    transition: 0.3s;
+}
+
+.cabecalho a:hover {
+    color: #067be2;
+}
+
+/* Linha animada */
+.cabecalho a::after {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+
+    width: 0;
+    height: 2px;
+
+    background: #067be2;
+
+    transition: 0.3s;
+}
+
+.cabecalho a:hover::after {
+    width: 100%;
+}
+
+/* Botão Cadastro */
+.btn-cadastro {
+    background: #067be2;
+    color: white !important;
+
+    padding: 10px 22px;
+    border-radius: 30px;
+
+    transition: 0.3s;
+}
+
+.btn-cadastro:hover {
+    background: #045fb0;
+    transform: translateY(-2px);
+}
+
+.btn-cadastro::after {
+    display: none;
+}
+
+/* ==========================
+   RESPONSIVIDADE
+========================== */
+
+@media (max-width: 768px) {
+
+    body {
+        padding-top: 120px;
+    }
+
+    .cabecalho {
+        height: auto;
+        padding: 15px 0;
+    }
+
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .cabecalho ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .logo-img {
+        height: 250px;
+    }
+}
+.hero{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    min-height: 90vh;
+
+    padding: 50px 10%;
+
+    background: linear-gradient(
+        120deg,
+        #eaf4ff 50%,
+        #d8ecff 50%
+    );
+}
+
+.hero-texto{
+    width: 50%;
+}
+
+.hero-texto h1{
+    font-size: 70px;
+    line-height: 1.1;
+}
+
+.hero-texto span{
+    color: #067be2;
+}
+
+.hero-texto p{
+    font-size: 22px;
+    margin: 30px 0;
+}
+
+.hero-texto button{
+    padding: 20px 60px;
+    border-radius: 50px;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.hero-imagem{
+    width: 45%;
+}
+
+.hero-imagem img{
+    width: 100%;
+}
+
+.beneficios {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.beneficio {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.beneficio:hover {
+    transform: translateY(-5px);
+}
+
+.beneficio h3 {
+    color: #067be2;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .beneficios {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    width: 300px;                        
+    display: inline-block;               /* Permite cards lado a lado e aceita largura/altura */
+    margin: 30px;                        
+    border-radius: 10px;                 
+    overflow: hidden;                    /* Corta o conteúdo que passar das bordas arredondadas */
+    background-color: white;            
+    text-align: center;                 
+    /* Brilho LED */
+    box-shadow: 0 0 5px #067be2, 
+                0 0 8px #067be2, 
+                0 0 8px #067be2;         /* Efeito de brilho neon azulado nas bordas */
+    transition: transform 0.3s ease, 
+                box-shadow 0.3s ease;    /* Suaviza o efeito de animação */
+}
+
+.card-image {
+    width: 100%;                         
+    height: 320px;                      
+    overflow: hidden;                    /* Esconde sobras da imagem */
+}
+
+.card-image img {
+    width: 100%;                       
+    height: 100%;                       
+    object-fit: cover;                   /* Preenche o espaço cortando a imagem sem distorcer */
+    display: block;                      /* Remove espaços em branco indesejados abaixo da imagem */
+}
+
+.card-conteiner {
+    padding: 15px;                       
+}
+
+.card:hover {
+    transform: translateY(-5px);          
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15); 
+}
+
+/* Estilo do container do formulário */
+#meuform {
+    display: flex;                       /* Ativa Flexbox no formulário */
+    flex-direction: column;              /* Empilha os inputs um embaixo do outro */
+    max-width: 350px;                   
+    gap: 15px;                           
+    padding: 20px;                       
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    border-radius: 10px;                 
+}
+
+#modalCadastro {
+    margin-top: 80px;
+}
+
+/* Estilo geral dos inputs */
+input {
+    padding: 12px;                      
+    border: 1px solid #ccc;              
+    border-radius: 8px;                  
+    font-family: 'Quicksand', sans-serif; 
+    font-size: 16px;                     
+    outline: none;                       /* Remove a borda preta padrão do navegador ao clicar */
+    transition: border-color 0.3s;       
+}
+
+
+/* Estilo do botão de cadastro */
+button {
+    padding: 12px;                      
+    background-color: #067be2;           
+    border: none;                        
+    border-radius: 8px;                  
+    cursor: pointer;                     /* Transforma a seta do mouse na "mãozinha" de clique */
+    font-family: 'Quicksand', sans-serif; 
+    font-weight: bold;                   
+    transition: background-color 0.3s;  
+}
+
+button:hover {
+    background-color: #76b0dc;           
+}
+
+/* Mensagem de erro das senhas */
+#mensagem_erro {
+    font-family: 'Quicksand', sans-serif; 
+    font-size: 14px;                    
+    margin-top: -10px;                   /* Puxa a mensagem um pouco para cima do input anterior */
+    font-weight: 500;                    
+}
+
+/* ==========================
+   CONVÊNIOS
+========================== */
+
+#convenios {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 0 20px;
+}
+
+#convenios h2 {
+    text-align: center;
+    font-size: 2.2rem;
+    color: #1f2937;
+    margin-bottom: 40px;
+}
+
+#convenios ul {
+    list-style: none;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 25px;
+
+    padding: 0;
+}
+
+#convenios li {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    font-size: 1.2rem;
+    font-weight: 700;
+
+    color: #067be2;
+
+    text-align: center;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+
+    transition: 0.3s;
+}
+
+#convenios li:hover {
+    transform: translateY(-8px);
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* Responsividade */
+
+@media (max-width: 768px) {
+
+    #convenios ul {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* ==========================
+   RODAPÉ PROFISSIONAL
+========================== */
+
+footer {
+    background: #ffffff;
+    border-top: 1px solid #e8e8e8;
+
+    padding: 40px 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 80px;
+    flex-wrap: wrap;
+
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+
+    margin-top: 60px;
+}
+
+.footer-item {
+    text-align: center;
+    min-width: 180px;
+}
+
+.footer-item h3 {
+    color: #067be2;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.footer-item p {
+    color: #555;
+    margin: 0;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* efeito ao passar o mouse */
+.footer-item:hover {
+    transform: translateY(-3px);
+    transition: 0.3s;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    footer {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .footer-item {
+        width: 100%;
+    }
+
+    .copyright {
+    background: #f8f9fa;
+    text-align: center;
+    padding: 15px;
+    color: #777;
+    font-size: 14px;
+    border-top: 1px solid #e8e8e8;
+}
+}
+.calendly-card {
+    color: #73ABDC;                      
+    text-decoration: none;              
+}
+
+/* Modais fundo embaçado */
+.modal {
+    position: fixed;                     
+    top: 0; left: 0;                     
+    width: 100%; height: 100%;          
+    background: rgba(0, 0, 0, 0.5);      
+    backdrop-filter: blur(8px);          /* Aplica o efeito de desfoque/embaçado ao fundo */
+    display: none;                       /* Fica escondido por padrão (muda para flex via JS) */
+    justify-content: center;             /* Centraliza a caixa do modal horizontalmente */
+    align-items: center;                 /* Centraliza a caixa do modal verticalmente */
+    z-index: 999;                        /* Garante que fique acima de tudo, exceto o header */
+}
+
+.modal-box {
+    background: white;                  
+    padding: 30px;                      
+    border-radius: 15px;                
+    width: 350px;                        
+    text-align: center;                  
+}
+
+.modal-box input { 
+    width: 100%;                        
+    padding: 10px;                       
+    margin: 8px 0;                     
+    border-radius: 8px;                  
+    border: 1px solid #ccc;             
+}
+
+.close-btn { 
+    background-color: #ccc;             
+    color: #333;                        
+}
+
+.mensagem { 
+    margin-top: 10px;                    
+    color: green;                       
+    display: none;                       /* Escondida por padrão */
+}
