@@ -180,7 +180,7 @@
                     <input type="text" id="celular" placeholder="Celular" maxlength="15" required>
                     <input type="email" id="e-mail" placeholder="Email" maxlength="60" required>
                     <input type="password" id="senha" placeholder="Senha" required>
-                    <input type="text" id="cep" placeholder="00000-000" maxlength="9" onblur="pesquisacep(this.value)" required>
+                    <input type="text" id="cep" placeholder="00000-000" maxlength="9" onblur="pesquisarCep(this.value)" required>
                     
                     <!-- Mudado de 'disabled' para 'readonly' para evitar travamento na leitura do JS -->
                     <input type="text" id="rua" placeholder="Rua" readonly>
@@ -418,26 +418,30 @@ function preencherEndereco(dadosCep) {
 function pesquisarCep(valorDigitado) {
     const cep = valorDigitado.replace(/\D/g, "");
 
-    if (cep !== "") {
+    if (cep.length === 8) {
         const script = document.createElement("script");
-        script.src = "https://viacep.com.br/ws/" + cep + "/json/?callback=preencherEndereco";
+        script.src =
+            `https://viacep.com.br/ws/${cep}/json/?callback=preencherEndereco`;
+
         document.body.appendChild(script);
+    } else {
+        alert("CEP inválido.");
     }
 }
 </script>
        <footer>
     <div class="footer-item">
-        <h3>📞 Fale Conosco</h3>
+        <h3> Fale Conosco</h3>
         <p>(21) 98679-4585</p>
     </div>
 
     <div class="footer-item">
-        <h3>✉️ E-mail</h3>
+        <h3> E-mail</h3>
         <p>vittanexus@gmail.com</p>
     </div>
 
     <div class="footer-item">
-        <h3>📸 Instagram</h3>
+        <h3>  Instagram</h3>
         <p>@vittanexus</p>
     </div>
 </footer>
