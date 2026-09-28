@@ -20,7 +20,7 @@
                     <li><a href="#home">Home</a></li>
                     <li><a href="#especialidades">Especialidades</a></li>
                     <li><a href="#" onclick="abrirLogin()">Login</a></li>
-                    <li><a href="#" onclick="abrirCadastro()">Cadastro</a></li>
+                    <li><a href="#cadastro" onclick="abrirCadastro()">Cadastro</a></li>
                 </ul>
             </nav>
         </div>
@@ -222,7 +222,7 @@
                     <button type="submit" class="btn">Entrar</button>
                 </form>
                 <p style="margin-top: 15px; font-size: 14px;">
-                    Não tem uma conta? <a href="#" onclick="alternarParaCadastro()" style="color: #007bff; text-decoration: underline;">Cadastre-se aqui</a>
+                    Não tem uma conta? <a href="#cadastro" onclick="abrirCadastro()" style="color: #007bff; text-decoration: underline;">Cadastre-se aqui</a>
                 </p>
                 <button class="btn close-btn" onclick="fecharModal('modalLogin')">Fechar</button>
             </div>
@@ -238,12 +238,6 @@
                     <input type="text" id="celular" placeholder="Celular" maxlength="15" required>
                     <input type="email" id="e-mail" placeholder="Email" maxlength="60" required>
                     <input type="password" id="senha" placeholder="Senha" required>
-                    <input type="text" id="cep" placeholder="00000-000" maxlength="9" onblur="pesquisacep(this.value)" required>
-                    
-                    <!-- Mudado de 'disabled' para 'readonly' para evitar travamento na leitura do JS -->
-                    <input type="text" id="rua" placeholder="Rua" readonly>
-                    <input type="text" id="cidade" placeholder="Cidade" readonly>
-                    <input type="text" id="uf" placeholder="UF" readonly>
                     
                     <button type="submit" class="btn">Cadastrar</button>
                     <div class="mensagem" id="mensagemSucesso" style="display:none; color: green; font-weight: bold; margin-top: 10px;">Dados enviados com sucesso!</div>
@@ -258,16 +252,6 @@
         
         let estaLogado = false;
 let linkCalendlyPendente = null;
-
-// Verifica se já existe usuário salvo
-const usuarioSalvo = localStorage.getItem("usuarioVittaNexus");
-
-if (usuarioSalvo) {
-    estaLogado = true;
-    const usuario = JSON.parse(usuarioSalvo);
-    console.log("Usuário carregado:", usuario.nome);
-}
-
 
 // MODAIS
 
@@ -351,19 +335,6 @@ function efetuarCadastro(evento) {
         return;
     }
 
-    const novoUsuario = {
-        nome: document.getElementById("nome").value,
-        cpf: document.getElementById("cpf").value,
-        celular: document.getElementById("celular").value,
-        email: document.getElementById("e-mail").value,
-        cep: document.getElementById("cep").value,
-        rua: document.getElementById("rua").value,
-        cidade: document.getElementById("cidade").value,
-        uf: document.getElementById("uf").value,
-        senha: document.getElementById("senha").value
-    };
-
-    localStorage.setItem("usuarioVittaNexus", JSON.stringify(novoUsuario));
 
     estaLogado = true;
 
@@ -459,29 +430,6 @@ function validarCPF(cpf) {
     return resto === parseInt(cpf.substring(10, 11));
 }
 
-
-// BUSCAR CEP
-
-
-function preencherEndereco(dadosCep) {
-    if (!("erro" in dadosCep)) {
-        document.getElementById("rua").value = dadosCep.logradouro;
-        document.getElementById("cidade").value = dadosCep.localidade;
-        document.getElementById("uf").value = dadosCep.uf;
-    } else {
-        alert("CEP não encontrado.");
-    }
-}
-
-function pesquisarCep(valorDigitado) {
-    const cep = valorDigitado.replace(/\D/g, "");
-
-    if (cep !== "") {
-        const script = document.createElement("script");
-        script.src = "https://viacep.com.br/ws/" + cep + "/json/?callback=preencherEndereco";
-        document.body.appendChild(script);
-    }
-}
 </script>
        <footer>
     <div class="footer-item">
