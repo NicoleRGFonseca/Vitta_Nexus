@@ -1,0 +1,832 @@
+<?php
+
+require_once 'config/conexao.php';
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vitta Nexus | Administração</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/admin.js"></script>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+    <!-- ==================== LOGIN ==================== -->
+    <section class="admin-login" id="loginScreen">
+        <div class="login-decoration decoration-one"></div>
+        <div class="login-decoration decoration-two"></div>
+
+        <div class="login-card">
+
+            <div class="login-brand">
+                <div class="brand-mark">VN</div>
+                <div>
+                    <span class="brand-name">Vitta Nexus</span>
+                    <span class="brand-area">Área administrativa</span>
+                </div>
+            </div>
+
+            <div class="login-heading">
+                <span class="eyebrow">ACESSO RESTRITO</span>
+                <h1>Bem-vindo de volta</h1>
+                <p>Entre com suas credenciais para acessar o painel administrativo da clínica.</p>
+            </div>
+
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="adminEmail">E-mail</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">✉</span>
+                        <input type="email" id="adminEmail" placeholder="seuemail@vittanexus.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="adminPassword">Senha</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">●</span>
+                        <input type="password" id="adminPassword" placeholder="Digite sua senha" required>
+                        <button type="button" class="password-toggle" id="togglePassword" aria-label="Mostrar senha">◉</button>
+                    </div>
+                </div>
+
+                <div class="login-options">
+                    <label class="check-label">
+                        <input type="checkbox">
+                        <span>Lembrar acesso</span>
+                    </label>
+
+                    <a href="#" onclick="return false;">Esqueci minha senha</a>
+                </div>
+
+                <button type="submit" class="primary-button login-button">
+                    Entrar no painel
+                    <span>→</span>
+                </button>
+
+                <p class="login-message" id="loginMessage"></p>
+            </form>
+
+            <a class="back-site" href="../index.html">← Voltar para o site</a>
+
+            <div class="security-note">
+                <span>🔒</span>
+                <p>Ambiente destinado exclusivamente à equipe autorizada.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== DASHBOARD ==================== -->
+    <div class="admin-app hidden" id="adminApp">
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-top">
+                <div class="sidebar-brand">
+                    <div class="brand-mark">VN</div>
+                    <div>
+                        <span class="brand-name">Vitta Nexus</span>
+                        <span class="brand-area">Administração</span>
+                    </div>
+                </div>
+
+                <button class="close-sidebar" id="closeSidebar" aria-label="Fechar menu">×</button>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <span class="nav-label">VISÃO GERAL</span>
+
+                <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <span class="nav-label">GESTÃO</span>
+
+                <a href="#consultas" class="nav-item" data-section="consultas">
+                    <span class="nav-icon">▣</span>
+                    <span>Consultas</span>
+                    <span class="nav-badge">8</span>
+                </a>
+
+                <a href="#medicos" class="nav-item" data-section="medicos">
+                    <span class="nav-icon">♙</span>
+                    <span>Médicos</span>
+                </a>
+
+                <a href="#especialidades" class="nav-item" data-section="especialidades">
+                    <span class="nav-icon">✚</span>
+                    <span>Especialidades</span>
+                </a>
+
+                <a href="#pacientes" class="nav-item" data-section="pacientes">
+                    <span class="nav-icon">♧</span>
+                    <span>Pacientes</span>
+                </a>
+
+                <span class="nav-label">FINANCEIRO</span>
+
+                <a href="#financeiro" class="nav-item" data-section="financeiro">
+                    <span class="nav-icon">R$</span>
+                    <span>Financeiro</span>
+                </a>
+
+                <span class="nav-label">SISTEMA</span>
+
+                <a href="#configuracoes" class="nav-item" data-section="configuracoes">
+                    <span class="nav-icon">⚙</span>
+                    <span>Configurações</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="admin-profile">
+                    <div class="avatar">AD</div>
+                    <div class="admin-profile-info">
+                        <strong>Administrador</strong>
+                        <span>Acesso autorizado</span>
+                    </div>
+                    <button class="logout-mini" id="logoutButton" title="Sair">↪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+
+                <div class="breadcrumb">
+                    <span>Vitta Nexus</span>
+                    <span>/</span>
+                    <strong id="breadcrumbCurrent">Dashboard</strong>
+                </div>
+
+                <div class="topbar-actions">
+                    <button class="icon-button notification-button" title="Notificações">
+                        ♧
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="topbar-profile">
+                        <div class="avatar small">AD</div>
+                        <div>
+                            <strong>Administrador</strong>
+                            <span>Equipe Vitta Nexus</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ==================== CONSULTAS ==================== -->
+            <section class="content-section" id="section-consultas">
+
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">GESTÃO</span>
+                        <h1>Consultas</h1>
+                        <p>Visualize e gerencie os agendamentos da clínica.</p>
+                    </div>
+
+                    <button class="primary-button" onclick="showToast('Novo agendamento disponível futuramente.')">
+                        + Novo agendamento
+                    </button>
+                </div>
+
+                <div class="filter-panel">
+                    <div class="search-box">
+                        <span>⌕</span>
+                        <input type="search" placeholder="Buscar paciente ou médico...">
+                    </div>
+
+                    <select class="select-control">
+                        <option>Todos os status</option>
+                        <option>Confirmada</option>
+                        <option>Pendente</option>
+                        <option>Cancelada</option>
+                    </select>
+
+                    <select class="select-control">
+                        <option>Todas as especialidades</option>
+                        <option>Cardiologia</option>
+                        <option>Neurologia</option>
+                        <option>Pediatria</option>
+                    </select>
+
+                    <button class="outline-button">Filtrar</button>
+                </div>
+
+                <div class="table-panel">
+                    <div class="table-header">
+                        <div>
+                            <span class="panel-kicker">AGENDAMENTOS</span>
+                            <h2>Lista de consultas</h2>
+                        </div>
+                        <span class="table-count">248 registros</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Médico</th>
+                                    <th>Especialidade</th>
+                                    <th>Data e horário</th>
+                                    <th>Convênio</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td><strong>Ana Souza</strong><span class="cell-muted">CPF: ***.***.***-12</span></td>
+                                    <td>Dra. Nicole</td>
+                                    <td>Cardiologia</td>
+                                    <td>25/09/2026 · 14:00</td>
+                                    <td>Unimed</td>
+                                    <td><span class="status confirmed">Confirmada</span></td>
+                                    <td><button class="table-action" onclick="showToast('Detalhes da consulta')">•••</button></td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>João Martins</strong><span class="cell-muted">CPF: ***.***.***-45</span></td>
+                                    <td>Dra. Nathalya</td>
+                                    <td>Neurologia</td>
+                                    <td>25/09/2026 · 15:30</td>
+                                    <td>Amil</td>
+                                    <td><span class="status waiting">Pendente</span></td>
+                                    <td><button class="table-action" onclick="showToast('Detalhes da consulta')">•••</button></td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Lucas Costa</strong><span class="cell-muted">CPF: ***.***.***-77</span></td>
+                                    <td>Dra. Byanca</td>
+                                    <td>Pediatria</td>
+                                    <td>26/09/2026 · 09:00</td>
+                                    <td>Bradesco Saúde</td>
+                                    <td><span class="status confirmed">Confirmada</span></td>
+                                    <td><button class="table-action" onclick="showToast('Detalhes da consulta')">•••</button></td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Marina Lima</strong><span class="cell-muted">CPF: ***.***.***-31</span></td>
+                                    <td>Dra. Nicole</td>
+                                    <td>Cardiologia</td>
+                                    <td>26/09/2026 · 10:30</td>
+                                    <td>Particular</td>
+                                    <td><span class="status cancelled">Cancelada</span></td>
+                                    <td><button class="table-action" onclick="showToast('Detalhes da consulta')">•••</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ==================== MÉDICOS ==================== -->
+            <section class="content-section" id="section-medicos">
+
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">GESTÃO</span>
+                        <h1>Médicos</h1>
+                        <p>Cadastre e organize os profissionais da clínica.</p>
+                    </div>
+
+                    <button class="primary-button" id="openDoctorModal">+ Cadastrar médico</button>
+                </div>
+
+                <div class="doctor-grid">
+
+                    <article class="doctor-card">
+                        <div class="doctor-card-top">
+                            <div class="doctor-avatar">DN</div>
+                            <span class="active-pill">Ativo</span>
+                        </div>
+                        <h3>Dra. Nicole</h3>
+                        <p>Cardiologia</p>
+                        <div class="doctor-details">
+                            <span>CRM 123456</span>
+                            <span>R$ 250,00</span>
+                        </div>
+                        <div class="doctor-actions">
+                            <button class="outline-button small-button">Editar</button>
+                            <button class="ghost-button">•••</button>
+                        </div>
+                    </article>
+
+                    <article class="doctor-card">
+                        <div class="doctor-card-top">
+                            
+                        </div>
+                        
+                        <?php foreach ($medicos as $medico):?>
+
+                       <h3> htmlspecialchars($medico['nome'])</h3>
+                        <br>
+
+                       <p>Especialidade:<?= $medico['id_esp']?></p>
+
+                        <div class="doctor-details">
+                          <p>CRM: htmlspecialchars($medico['crm'])</p>
+                          <p>Email: htmlspecialchars($medico['email'])</p>
+                          <?php endforeach; ?>
+                          <?php else:?>
+                          <p>Nenhum medico cadastrado.</p>
+                          <?php endif; ?>
+                     
+                        </div>
+                        <div class="doctor-actions">
+                            <button class="outline-button small-button">Editar</button>
+                            <button class="ghost-button">•••</button>
+                        </div>
+                    </article>
+
+                    <article class="doctor-card">
+                        <div class="doctor-card-top">
+                            <div class="doctor-avatar">DB</div>
+                            <span class="active-pill">Ativo</span>
+                        </div>
+                        <h3>Dra. Byanca</h3>
+                        <p>Pediatria</p>
+                        <div class="doctor-details">
+                            <span>CRM 345678</span>
+                            <span>R$ 220,00</span>
+                        </div>
+                        <div class="doctor-actions">
+                            <button class="outline-button small-button">Editar</button>
+                            <button class="ghost-button">•••</button>
+                        </div>
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================== ESPECIALIDADES ==================== -->
+            <section class="content-section" id="section-especialidades">
+
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">GESTÃO</span>
+                        <h1>Especialidades</h1>
+                        <p>Cadastre e organize as especialidades disponíveis.</p>
+                    </div>
+
+                    <button class="primary-button" id="openSpecialtyModal">+ Nova especialidade</button>
+                </div>
+
+                <div class="specialty-grid">
+
+                    <article class="specialty-card">
+                        
+                     <?php foreach ($especialidades as $esp):?>
+
+                       <h3> htmlspecialchars($esp['nome'])</h3>
+                       <p>Cód: #<?= $esp['id_esp']?></p>
+
+                     <?php endforeach; ?>
+                     <?php else:?>
+                       <p>Nenhuma especialidade cadastrada</p>
+                     <?php endif; ?>
+                     
+                        <div class="specialty-footer">
+                            <span>4 médicos</span>
+                            <button class="ghost-button">Editar</button>
+                        </div>
+                    </article>
+
+                    <article class="specialty-card">
+                        <div class="specialty-card-icon">⌁</div>
+                        <div>
+                            <h3>Neurologia</h3>
+                            <p>Diagnóstico e acompanhamento do sistema nervoso.</p>
+                        </div>
+                        <div class="specialty-footer">
+                            <span>3 médicos</span>
+                            <button class="ghost-button">Editar</button>
+                        </div>
+                    </article>
+
+                    <article class="specialty-card">
+                        <div class="specialty-card-icon">✚</div>
+                        <div>
+                            <h3>Pediatria</h3>
+                            <p>Atendimento médico para crianças e adolescentes.</p>
+                        </div>
+                        <div class="specialty-footer">
+                            <span>5 médicos</span>
+                            <button class="ghost-button">Editar</button>
+                        </div>
+                    </article>
+
+                    <article class="specialty-card add-specialty-card" id="addSpecialtyCard">
+                        <div class="add-icon">+</div>
+                        <h3>Adicionar especialidade</h3>
+                        <p>Cadastre uma nova especialidade.</p>
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================== PACIENTES ==================== -->
+            <section class="content-section" id="section-pacientes">
+
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">GESTÃO</span>
+                        <h1>Pacientes</h1>
+                        <p>Consulte os pacientes cadastrados no sistema.</p>
+                    </div>
+
+                    <button class="outline-button">Exportar lista ↓</button>
+                </div>
+
+                <div class="filter-panel">
+                    <div class="search-box">
+                        <span>⌕</span>
+                        <input type="search" placeholder="Buscar paciente...">
+                    </div>
+                    <select class="select-control">
+                        <option>Todos os convênios</option>
+                        <option>Unimed</option>
+                        <option>Amil</option>
+                        <option>Bradesco Saúde</option>
+                        <option>SulAmérica</option>
+                        <option>Particular</option>
+                    </select>
+                    <button class="outline-button">Filtrar</button>
+                </div>
+
+                <div class="table-panel">
+                    <div class="table-header">
+                        <div>
+                            <span class="panel-kicker">CADASTRO</span>
+                            <h2>Pacientes cadastrados</h2>
+                        </div>
+                        <span class="table-count">1.284 pacientes</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Contato</th>
+                                    <th>Convênio</th>
+                                    <th>Última consulta</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Ana Souza</strong><span class="cell-muted">Cadastro: 08/08/2026</span></td>
+                                    <td>(11) 99999-0000</td>
+                                    <td>Unimed</td>
+                                    <td>20/09/2026</td>
+                                    <td><span class="status confirmed">Ativo</span></td>
+                                    <td><button class="table-action">•••</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>João Martins</strong><span class="cell-muted">Cadastro: 12/08/2026</span></td>
+                                    <td>(11) 98888-1111</td>
+                                    <td>Amil</td>
+                                    <td>18/09/2026</td>
+                                    <td><span class="status confirmed">Ativo</span></td>
+                                    <td><button class="table-action">•••</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Lucas Costa</strong><span class="cell-muted">Cadastro: 15/08/2026</span></td>
+                                    <td>(11) 97777-2222</td>
+                                    <td>Bradesco Saúde</td>
+                                    <td>16/09/2026</td>
+                                    <td><span class="status confirmed">Ativo</span></td>
+                                    <td><button class="table-action">•••</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+          
+
+            <footer class="admin-footer">
+                <span>© 2026 Vitta Nexus</span>
+                <span>Área administrativa · Frontend demonstrativo</span>
+            </footer>
+
+        </main>
+    </div>
+
+
+    <!-- ==================== MODAL MÉDICO ==================== -->
+
+    <div class="modal-overlay" id="doctorModal">
+ <div class="modal-card">
+
+        <h2>Cadastrar médico</h2>
+   <form id="doctorForm" class="modal-form" action="control/salvar_medico.php" method="POST">
+
+    <div class="form-grid">
+        <div class="form-group full">
+            <label for="doctorName">Nome completo</label>
+            <!-- ADICIONADO name="nome" -->
+            <input type="text" id="doctorName" name="nome" placeholder="Ex.: Dra. Maria Silva" required>
+        </div>
+
+        <div class="form-group">
+            <label for="doctorCrm">CRM</label>
+            <!-- ADICIONADO name="crm" -->
+            <input type="text" id="doctorCrm" name="crm" placeholder="Ex.: 123456" required>
+        </div>
+
+        <div class="form-group">
+            <label for="doctorSpecialty">Especialidade</label>
+            <select id="doctorSpecialty" name="id_esp" required>
+                <option value="">Selecione a especialidade</option>
+                <?php
+                
+                $stmt = $pdo->query("SELECT * FROM especialidades");
+                while ($esp = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    echo "<option value='{$esp['id_esp']}'>{$esp['nome']}</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="doctorPhone">Telefone</label>
+            <input type="tel" id="doctorPhone" name="telefone" placeholder="(11) 99999-9999">
+        </div>
+
+        <div class="form-group">
+            <label for="doctorEmail">E-mail</label>
+            <!-- ADICIONADO name="email" -->
+            <input type="email" id="doctorEmail" name="email" placeholder="medico@email.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="doctorPassword">Senha de Acesso</label>
+            <!-- ADICIONADO name="senha" (Obrigatório pois seu SQL tem senha_hash NOT NULL) -->
+            <input type="password" id="doctorPassword" name="senha" placeholder="Senha provisória" required>
+        </div>
+    </div>
+
+    <div class="modal-actions">
+        <button type="button" class="outline-button" data-close-modal="doctorModal">Cancelar</button>
+        <button type="submit" class="primary-button">Cadastrar médico</button>
+    </div>
+ </div>
+ </form>
+ </div>
+</div>
+
+    <!-- ==================== MODAL ESPECIALIDADE ==================== -->
+    <div class="modal-overlay" id="specialtyModal">
+        <div class="modal-card small-modal">
+
+            <button class="modal-close" data-close-modal="specialtyModal">×</button>
+
+            <div class="modal-heading">
+                <span class="modal-icon">✚</span>
+                <div>
+                    <span class="eyebrow">CADASTRO</span>
+                    <h2>Nova especialidade</h2>
+                    <p>Adicione uma nova especialidade ao sistema.</p>
+                </div>
+            </div>
+
+            <form id="specialtyForm" method="POST" action="control/salvar_especialidade.php" class="modal-form">
+
+                <div class="form-group">
+                    <label for="specialtyName">Nome da especialidade</label>
+                    <input type="text" id="specialtyName" name="nome" placeholder="Ex.: Dermatologia" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="outline-button" data-close-modal="specialtyModal">Cancelar</button>
+                    <button type="submit" class="primary-button">Cadastrar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+    <div class="toast" id="toast">
+        <span>✓</span>
+        <p id="toastMessage">Ação realizada.</p>
+    </div>
+
+
+    <script>
+        // =====================================================
+        // LOGIN DEMONSTRATIVO
+        // Frontend apenas — sem autenticação real ainda.
+        // =====================================================
+
+        const loginScreen = document.getElementById("loginScreen");
+        const adminApp = document.getElementById("adminApp");
+        const adminLoginForm = document.getElementById("adminLoginForm");
+        const loginMessage = document.getElementById("loginMessage");
+
+        adminLoginForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            loginScreen.classList.add("hidden");
+            adminApp.classList.remove("hidden");
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        document.getElementById("togglePassword").addEventListener("click", function() {
+            const input = document.getElementById("adminPassword");
+
+            if (input.type === "password") {
+                input.type = "text";
+                this.textContent = "◉";
+            } else {
+                input.type = "password";
+                this.textContent = "●";
+            }
+        });
+
+        // =====================================================
+        // NAVEGAÇÃO
+        // =====================================================
+
+        const navItems = document.querySelectorAll(".nav-item");
+        const sections = document.querySelectorAll(".content-section");
+        const breadcrumbCurrent = document.getElementById("breadcrumbCurrent");
+
+        function openSection(sectionName) {
+            sections.forEach(section => {
+                section.classList.remove("active-section");
+            });
+
+            const selectedSection = document.getElementById("section-" + sectionName);
+
+            if (selectedSection) {
+                selectedSection.classList.add("active-section");
+            }
+
+            navItems.forEach(item => {
+                item.classList.toggle("active", item.dataset.section === sectionName);
+            });
+
+            const activeItem = document.querySelector('.nav-item[data-section="' + sectionName + '"]');
+
+            if (activeItem) {
+                breadcrumbCurrent.textContent = activeItem.querySelector("span:nth-child(2)")?.textContent || "Dashboard";
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+
+            closeMobileSidebar();
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener("click", function(event) {
+                event.preventDefault();
+                openSection(this.dataset.section);
+            });
+        });
+
+        document.querySelectorAll("[data-section-link]").forEach(button => {
+            button.addEventListener("click", function() {
+                openSection(this.dataset.sectionLink);
+            });
+        });
+
+        // =====================================================
+        // SIDEBAR MOBILE
+        // =====================================================
+
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        document.getElementById("menuToggle").addEventListener("click", function() {
+            sidebar.classList.add("mobile-open");
+            sidebarOverlay.classList.add("visible");
+        });
+
+        document.getElementById("closeSidebar").addEventListener("click", closeMobileSidebar);
+        sidebarOverlay.addEventListener("click", closeMobileSidebar);
+
+        function closeMobileSidebar() {
+            sidebar.classList.remove("mobile-open");
+            sidebarOverlay.classList.remove("visible");
+        }
+
+        // =====================================================
+        // LOGOUT
+        // =====================================================
+
+        document.getElementById("logoutButton").addEventListener("click", function() {
+            adminApp.classList.add("hidden");
+            loginScreen.classList.remove("hidden");
+            adminLoginForm.reset();
+            openSection("dashboard");
+        });
+
+        // =====================================================
+        // MODAIS
+        // =====================================================
+
+        const doctorModal = document.getElementById("doctorModal");
+        const specialtyModal = document.getElementById("specialtyModal");
+
+        document.getElementById("openDoctorModal").addEventListener("click", function() {
+            doctorModal.classList.add("show");
+        });
+
+        document.getElementById("openSpecialtyModal").addEventListener("click", function() {
+            specialtyModal.classList.add("show");
+        });
+
+        document.getElementById("addSpecialtyCard").addEventListener("click", function() {
+            specialtyModal.classList.add("show");
+        });
+
+        document.querySelectorAll("[data-close-modal]").forEach(button => {
+            button.addEventListener("click", function() {
+                const modalId = this.dataset.closeModal;
+                document.getElementById(modalId).classList.remove("show");
+            });
+        });
+
+        document.querySelectorAll(".modal-overlay").forEach(modal => {
+            modal.addEventListener("click", function(event) {
+                if (event.target === modal) {
+                    modal.classList.remove("show");
+                }
+            });
+        });
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                document.querySelectorAll(".modal-overlay").forEach(modal => {
+                    modal.classList.remove("show");
+                });
+            }
+        });
+
+        // =====================================================
+        // FORMULÁRIOS DEMONSTRATIVOS
+        // =====================================================
+
+      
+
+        document.getElementById("specialtyForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            specialtyModal.classList.remove("show");
+            this.reset();
+            showToast("Especialidade cadastrada visualmente com sucesso!");
+        });
+
+        // =====================================================
+        // TOAST
+        // =====================================================
+
+        let toastTimer;
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            const toastMessage = document.getElementById("toastMessage");
+
+            toastMessage.textContent = message;
+            toast.classList.add("show");
+
+            clearTimeout(toastTimer);
+
+            toastTimer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2800);
+        }
+    </script>
+
+</body>
+</html>
