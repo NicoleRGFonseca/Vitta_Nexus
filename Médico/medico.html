@@ -1,0 +1,150 @@
+<?php
+// Vitta Nexus - Painel do médico
+// Esta versão é visual/demonstrativa. O DER ainda não foi criado no MySQL,
+// portanto os agendamentos abaixo são exemplos e não vêm do banco de dados.
+$hoje = new DateTimeImmutable('now');
+$dataHoje = $hoje->format('d/m/Y');
+$diaHoje = $hoje->format('d/m/Y');
+
+$agendamentosDemo = [
+    ['hora' => '08:00', 'paciente' => 'Ana Souza', 'especialidade' => 'Consulta médica', 'status' => 'Confirmada'],
+    ['hora' => '09:30', 'paciente' => 'João Martins', 'especialidade' => 'Consulta médica', 'status' => 'Pendente'],
+    ['hora' => '11:00', 'paciente' => 'Lucas Costa', 'especialidade' => 'Consulta médica', 'status' => 'Confirmada'],
+];
+$totalHoje = count($agendamentosDemo);
+$totalConfirmadas = count(array_filter($agendamentosDemo, fn($a) => $a['status'] === 'Confirmada'));
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitta Nexus | Painel do Médico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Administrador/css/style.css">
+    <style>
+        /* Pequenos complementos para a tela do médico; o estilo base vem de admin.css. */
+        .doctor-welcome { margin-bottom: 24px; }
+        .doctor-welcome h1 { margin-bottom: 8px; }
+        .doctor-date { display: inline-flex; align-items: center; gap: 8px; color: #42647b; background: #edf6fc; border: 1px solid #d7eaf7; border-radius: 12px; padding: 10px 14px; font-weight: 700; }
+        .demo-notice { display: flex; gap: 10px; align-items: flex-start; background: #fff8e8; border: 1px solid #f2d99a; color: #76551b; border-radius: 12px; padding: 13px 15px; margin: 18px 0 22px; font-size: .9rem; line-height: 1.5; }
+        .doctor-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 26px; }
+        .doctor-stat { background: #fff; border: 1px solid #e3edf3; border-radius: 18px; padding: 22px; box-shadow: 0 5px 18px rgba(31, 73, 100, .04); }
+        .doctor-stat-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #61788a; font-size: .9rem; font-weight: 700; }
+        .doctor-stat-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: #eaf5fc; color: #2479ad; font-size: 1.25rem; }
+        .doctor-stat strong { display: block; font-size: 2rem; color: #173b52; margin-top: 13px; }
+        .doctor-stat small { display: block; color: #718596; margin-top: 4px; }
+        .doctor-table-panel { background: #fff; border: 1px solid #e3edf3; border-radius: 18px; overflow: hidden; box-shadow: 0 5px 18px rgba(31, 73, 100, .04); }
+        .doctor-table-heading { padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid #edf2f6; }
+        .doctor-table-heading h2 { margin: 5px 0 0; color: #173b52; }
+        .doctor-table-heading p { margin: 5px 0 0; color: #718596; font-size: .9rem; }
+        .doctor-table-scroll { overflow-x: auto; }
+        .doctor-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .doctor-table th, .doctor-table td { padding: 16px 22px; text-align: left; border-bottom: 1px solid #edf2f6; }
+        .doctor-table th { color: #708596; font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; background: #fbfdfe; }
+        .doctor-table td { color: #365367; font-size: .92rem; }
+        .patient-name { display: block; color: #1d4056; font-weight: 700; }
+        .patient-subtitle { display: block; color: #8495a2; font-size: .8rem; margin-top: 4px; }
+        .appointment-status { display: inline-block; border-radius: 999px; padding: 6px 10px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+        .appointment-status.confirmed { background: #e5f7ed; color: #21764b; }
+        .appointment-status.pending { background: #fff3d9; color: #946414; }
+        .empty-state { text-align: center; padding: 42px 20px; color: #708596; }
+        .empty-state .empty-icon { font-size: 2rem; margin-bottom: 10px; }
+        .doctor-footer { padding: 20px 0 10px; color: #8293a0; font-size: .82rem; display: flex; justify-content: space-between; gap: 12px; }
+        .doctor-nav-label { margin: 26px 0 10px; padding: 0 16px; color: #8ca0af; font-size: .68rem; font-weight: 700; letter-spacing: .1em; }
+        .doctor-nav { display: flex; flex-direction: column; gap: 7px; }
+        .doctor-nav a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #587286; text-decoration: none; font-weight: 700; }
+        .doctor-nav a.active, .doctor-nav a:hover { background: #eaf5fc; color: #2479ad; }
+        .doctor-nav-icon { width: 22px; text-align: center; font-size: 1.1rem; }
+        .doctor-sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 24px 20px; border-bottom: 1px solid #edf2f6; }
+        .doctor-brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #328bc4, #70b8e7); font-weight: 700; }
+        .doctor-brand-name { display: block; font-weight: 700; color: #1d4056; }
+        .doctor-brand-role { display: block; color: #8094a3; font-size: .78rem; margin-top: 3px; }
+        .doctor-sidebar-bottom { margin-top: auto; padding: 18px; border-top: 1px solid #edf2f6; }
+        .doctor-profile { display: flex; align-items: center; gap: 10px; }
+        .doctor-avatar { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #dceefa; color: #2479ad; font-weight: 700; }
+        .doctor-profile strong { display: block; color: #294a60; font-size: .86rem; }
+        .doctor-profile span { display: block; color: #8495a2; font-size: .75rem; margin-top: 3px; }
+        .doctor-logout { margin-left: auto; border: 0; background: transparent; color: #718596; cursor: pointer; font-size: 1.2rem; }
+        @media (max-width: 700px) { .doctor-stats { grid-template-columns: 1fr; } .doctor-table-heading { align-items: flex-start; flex-direction: column; } .doctor-footer { flex-direction: column; } }
+    </style>
+</head>
+<body>
+<div class="admin-app" style="display:flex; min-height:100vh;">
+    <aside class="sidebar" id="doctorSidebar" style="display:flex; flex-direction:column;">
+        <div class="doctor-sidebar-brand">
+            <div class="doctor-brand-mark">VN</div>
+            <div><span class="doctor-brand-name">Vitta Nexus</span><span class="doctor-brand-role">Área do médico</span></div>
+        </div>
+        <div class="doctor-nav-label">MENU PRINCIPAL</div>
+        <nav class="doctor-nav">
+            <a class="active" href="#inicio"><span class="doctor-nav-icon">⌂</span>Início</a>
+            <a href="#agendamentos"><span class="doctor-nav-icon">▦</span>Agendamentos de hoje</a>
+        </nav>
+        <div class="doctor-sidebar-bottom">
+            <div class="doctor-profile">
+                <div class="doctor-avatar">ME</div>
+                <div><strong>Área médica</strong><span>Painel do profissional</span></div>
+                <button class="doctor-logout" type="button" id="sairBtn" title="Sair" aria-label="Sair">↪</button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content" style="flex:1; min-width:0;">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu">☰</button>
+            <div class="breadcrumb"><span>Vitta Nexus</span><span>/</span><strong>Painel do médico</strong></div>
+            <div class="topbar-actions"><div class="topbar-profile"><div class="avatar small">ME</div><div><strong>Área médica</strong><span>Agenda diária</span></div></div></div>
+        </header>
+
+        <section class="content-section active-section" id="inicio">
+            <div class="page-header doctor-welcome">
+                <div><span class="eyebrow">ÁREA MÉDICA</span><h1>Olá, doutor(a)!</h1><p>Confira os agendamentos e as confirmações do dia.</p></div>
+                <div class="doctor-date">▦ &nbsp; <?= htmlspecialchars($diaHoje, ENT_QUOTES, 'UTF-8') ?></div>
+            </div>
+
+            <div class="demo-notice"><span>ⓘ</span><div><strong>Tela demonstrativa.</strong> Os nomes e horários abaixo são exemplos para visualizar o layout. O banco de dados ainda será criado e conectado.</div></div>
+
+            <div class="doctor-stats">
+                <article class="doctor-stat"><div class="doctor-stat-top"><span>Agendamentos de hoje</span><span class="doctor-stat-icon">▦</span></div><strong><?= $totalHoje ?></strong><small>Consultas listadas para hoje (exemplo)</small></article>
+                <article class="doctor-stat"><div class="doctor-stat-top"><span>Consultas confirmadas</span><span class="doctor-stat-icon">✓</span></div><strong><?= $totalConfirmadas ?></strong><small>Presenças confirmadas (exemplo)</small></article>
+            </div>
+
+            <div class="doctor-table-panel" id="agendamentos">
+                <div class="doctor-table-heading"><div><span class="panel-kicker">AGENDA DIÁRIA</span><h2>Agendamentos de hoje</h2><p>Veja quem está previsto para atendimento.</p></div><span class="table-count"><?= $totalHoje ?> agendamentos</span></div>
+                <div class="doctor-table-scroll">
+                    <table class="doctor-table">
+                        <thead><tr><th>Horário</th><th>Paciente</th><th>Atendimento</th><th>Status</th></tr></thead>
+                        <tbody>
+                        <?php foreach ($agendamentosDemo as $agendamento): ?>
+                            <tr>
+                                <td><strong><?= htmlspecialchars($agendamento['hora'], ENT_QUOTES, 'UTF-8') ?></strong></td>
+                                <td><span class="patient-name"><?= htmlspecialchars($agendamento['paciente'], ENT_QUOTES, 'UTF-8') ?></span><span class="patient-subtitle">Paciente agendado</span></td>
+                                <td><?= htmlspecialchars($agendamento['especialidade'], ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><span class="appointment-status <?= $agendamento['status'] === 'Confirmada' ? 'confirmed' : 'pending' ?>"><?= htmlspecialchars($agendamento['status'], ENT_QUOTES, 'UTF-8') ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <footer class="doctor-footer"><span>© 2026 Vitta Nexus</span><span>Painel do médico · Versão visual demonstrativa</span></footer>
+        </section>
+    </main>
+</div>
+<script>
+    const sidebar = document.getElementById('doctorSidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+        });
+    }
+    document.getElementById('sairBtn').addEventListener('click', () => {
+        alert('O login real será integrado em uma próxima etapa.');
+    });
+</script>
+</body>
+</html>
