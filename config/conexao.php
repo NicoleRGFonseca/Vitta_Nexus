@@ -1,7 +1,7 @@
 <?php
 // conexao.php (Usando PDO)
 $host = "localhost";
-$banco = "vitta_nexus";
+$banco = "vittanexus";
 $usuario = "root";
 $senha = "";
 
@@ -18,3 +18,4 @@ try {
     exit;
 }
 ?>
+   

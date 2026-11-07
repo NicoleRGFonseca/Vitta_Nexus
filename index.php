@@ -6,6 +6,8 @@ require_once 'control/listar_medicos.php';
 
 require_once 'control/listar_especialidade.php';
 
+
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -45,12 +47,12 @@ require_once 'control/listar_especialidade.php';
                 <p>Entre com suas credenciais para acessar o painel administrativo da clínica.</p>
             </div>
 
-            <form id="adminLoginForm">
+            <form id="adminLoginForm" method="POST" action="control/login_admin.php">
                 <div class="form-group">
                     <label for="adminEmail">E-mail</label>
                     <div class="input-wrapper">
                         <span class="input-icon">✉</span>
-                        <input type="email" id="adminEmail" placeholder="seuemail@vittanexus.com" required>
+                        <input type="email" name="email" id="adminEmail" placeholder="seuemail@vittanexus.com" required>
                     </div>
                 </div>
 
@@ -58,7 +60,7 @@ require_once 'control/listar_especialidade.php';
                     <label for="adminPassword">Senha</label>
                     <div class="input-wrapper">
                         <span class="input-icon">●</span>
-                        <input type="password" id="adminPassword" placeholder="Digite sua senha" required>
+                        <input type="password" name="senha" id="adminPassword" placeholder="Digite sua senha" required>
                         <button type="button" class="password-toggle" id="togglePassword" aria-label="Mostrar senha">◉</button>
                     </div>
                 </div>
@@ -140,12 +142,10 @@ require_once 'control/listar_especialidade.php';
                     <span>Pacientes</span>
                 </a>
 
-                <span class="nav-label">FINANCEIRO</span>
-
-                <a href="#financeiro" class="nav-item" data-section="financeiro">
-                    <span class="nav-icon">R$</span>
-                    <span>Financeiro</span>
-                </a>
+               <a href="#horarios" class="nav-item" data-section="horarios">
+                  <span class="nav-icon">🕒</span>
+                  <span>Horários</span>
+               </a>
 
                 <span class="nav-label">SISTEMA</span>
 
@@ -352,7 +352,7 @@ require_once 'control/listar_especialidade.php';
                 <p>
                     Especialidade:
                     <?= htmlspecialchars(
-                        (string) $medico['id_esp'],
+                        (string) $medico['nome_especialidade'],
                         ENT_QUOTES,
                         'UTF-8'
                     ) ?>
@@ -407,6 +407,124 @@ require_once 'control/listar_especialidade.php';
     <?php endif; ?>
 
 </div>
+</section>
+
+<!-- ==================== GESTÃO DE HORÁRIOS ==================== -->
+<section class="content-section" id="section-horarios">
+
+    <div class="page-header">
+        <div>
+            <span class="eyebrow">GESTÃO DE AGENDA</span>
+            <h1>Horários Disponíveis</h1>
+            <p>Gerencie a disponibilidade de horários dos médicos para consulta.</p>
+        </div>
+
+        <button class="primary-button" id="openScheduleModal" type="button">
+            + Gerar novos horários
+        </button>
+    </div>
+
+    <!-- Painel de Filtros -->
+    <div class="filter-panel">
+        <div class="search-box">
+            <span>⌕</span>
+            <input type="search" id="filterDoctorSearch" placeholder="Buscar por médico...">
+        </div>
+
+        <select class="select-control" id="filterDoctorSpecialty">
+            <option value="">Todas as especialidades</option>
+            <?php foreach ($especialidades as $esp): ?>
+                <option value="<?= htmlspecialchars($esp['id_esp']) ?>">
+                    <?= htmlspecialchars($esp['nome']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <select class="select-control" id="filterStatus">
+            <option value="">Todos os status</option>
+            <option value="disponivel">Disponível</option>
+            <option value="reservado">Reservado</option>
+            <option value="bloqueado">Bloqueado</option>
+        </select>
+
+        <button class="outline-button" type="button">Filtrar</button>
+    </div>
+
+    <!-- Tabela de Horários Cadastrados -->
+    <div class="table-panel">
+        <div class="table-header">
+            <div>
+                <span class="panel-kicker">SLOTS DE ATENDIMENTO</span>
+                <h2>Horários gerados</h2>
+            </div>
+            <span class="table-count">Listando registros</span>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cód #</th>
+                        <th>Médico</th>
+                        <th>Data</th>
+                        <th>Horário de Início</th>
+                        <th>Horário de Fim</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Query para buscar os horários cadastrados no banco
+                    $sqlSlots = "SELECT h.id_horario, h.data_hora_inicio, h.data_hora_fim, h.status, m.nome AS nome_medico 
+                                 FROM horarios_disponiveis h
+                                 JOIN medicos m ON h.id_medico = m.id_medico
+                                 ORDER BY h.data_hora_inicio DESC";
+                    $stmtSlots = $pdo->query($sqlSlots);
+                    $horarios = $stmtSlots->fetchAll(PDO::FETCH_ASSOC);
+
+                    if (!empty($horarios)):
+                        foreach ($horarios as $slot):
+                            $inicio = new DateTime($slot['data_hora_inicio']);
+                            $fim = new DateTime($slot['data_hora_fim']);
+                            
+                            // Define classe CSS do status
+                            $statusClass = 'waiting';
+                            if ($slot['status'] === 'disponivel') $statusClass = 'confirmed';
+                            if ($slot['status'] === 'bloqueado') $statusClass = 'cancelled';
+                    ?>
+                        <tr>
+                            <td><strong>#<?= $slot['id_horario'] ?></strong></td>
+                            <td>
+                                <strong><?= htmlspecialchars($slot['nome_medico']) ?></strong>
+                            </td>
+                            <td><?= $inicio->format('d/m/Y') ?></td>
+                            <td><?= $inicio->format('H:i') ?></td>
+                            <td><?= $fim->format('H:i') ?></td>
+                            <td>
+                                <span class="status <?= $statusClass ?>">
+                                    <?= ucfirst($slot['status']) ?>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="table-action" title="Excluir ou Bloquear">•••</button>
+                            </td>
+                        </tr>
+                    <?php 
+                        endforeach;
+                    else:
+                    ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 20px;">
+                                Nenhum horário disponível gerado no momento.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </section>
 <!-- ==================== ESPECIALIDADES ==================== -->
 <section class="content-section" id="section-especialidades">
@@ -582,6 +700,64 @@ require_once 'control/listar_especialidade.php';
         </main>
     </div>
 
+    <!-- ==================== MODAL DE HORÁRIOS ==================== -->
+<div class="modal-overlay" id="scheduleModal">
+    <div class="modal-card small-modal">
+
+        <button class="modal-close" data-close-modal="scheduleModal">×</button>
+
+        <div class="modal-heading">
+            <span class="modal-icon"></span>
+            <div>
+                <span class="eyebrow">AGENDA</span>
+                <h2>Gerar Horários Disponíveis</h2>
+                <p>Abra um horário de atendimento na agenda de um médico.</p>
+            </div>
+        </div>
+
+        <form id="scheduleForm" class="modal-form" method ="POST" action="control/salvar_horario.php">
+            <div class="form-group">
+                <label for="scheduleDoctor">Selecione o Médico</label>
+                <select id="scheduleDoctor" name="id_medico" required>
+                    <option value="">Escolha um médico</option>
+                    <?php foreach ($medicos as $medico): ?>
+                        <option value="<?= htmlspecialchars($medico['id_medico']) ?>">
+                            <?= htmlspecialchars($medico['nome']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="scheduleDate">Data do Atendimento</label>
+                    <input type="date" id="scheduleDate" name="data" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="scheduleTimeStart">Horário de Início</label>
+                    <input type="time" id="scheduleTimeStart" name="hora_inicio" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="scheduleDuration">Duração da Consulta (Minutos)</label>
+                <select id="scheduleDuration" name="duracao">
+                    <option value="30" selected>30 minutos</option>
+                    <option value="45">45 minutos</option>
+                    <option value="60">1 hora</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="outline-button" data-close-modal="scheduleModal">Cancelar</button>
+                <button type="submit" class="primary-button">Salvar Horário</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
 
     <!-- ==================== MODAL MÉDICO ==================== -->
 
@@ -690,35 +866,38 @@ require_once 'control/listar_especialidade.php';
 
     <script>
         // =====================================================
-        // LOGIN DEMONSTRATIVO
-        // Frontend apenas — sem autenticação real ainda.
-        // =====================================================
-
-        const loginScreen = document.getElementById("loginScreen");
-        const adminApp = document.getElementById("adminApp");
         const adminLoginForm = document.getElementById("adminLoginForm");
-        const loginMessage = document.getElementById("loginMessage");
+const loginMessage = document.getElementById("loginMessage");
 
-        adminLoginForm.addEventListener("submit", function(event) {
-            event.preventDefault();
+adminLoginForm.addEventListener("submit", async function(event) {
+    event.preventDefault(); // Impede o recarregamento padrão da página
 
+    const formData = new FormData(adminLoginForm);
+
+    try {
+        const resposta = await fetch("control/login_admin.php", {
+            method: "POST",
+            body: formData
+        });
+
+        const dados = await resposta.json();
+
+        if (dados.sucesso) {
+            // Se o login for único e correto, esconde a tela de login e abre o app
             loginScreen.classList.add("hidden");
             adminApp.classList.remove("hidden");
-
+            loginMessage.textContent = "";
             window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+        } else {
+            // Mostra a mensagem de erro caso o e-mail ou senha estejam errados
+            loginMessage.textContent = dados.mensagem;
+        }
 
-        document.getElementById("togglePassword").addEventListener("click", function() {
-            const input = document.getElementById("adminPassword");
-
-            if (input.type === "password") {
-                input.type = "text";
-                this.textContent = "◉";
-            } else {
-                input.type = "password";
-                this.textContent = "●";
-            }
-        });
+    } catch (erro) {
+        console.error("Erro no login:", erro);
+        loginMessage.textContent = "Erro de conexão com o servidor.";
+    }
+});
 
         // =====================================================
         // NAVEGAÇÃO
@@ -817,6 +996,15 @@ require_once 'control/listar_especialidade.php';
             specialtyModal.classList.add("show");
         });
 
+        const openScheduleBtn = document.getElementById("openScheduleModal");
+        const scheduleModal = document.getElementById("scheduleModal");
+
+         if (openScheduleBtn && scheduleModal) {
+         openScheduleBtn.addEventListener("click", () => {
+         scheduleModal.classList.add("show");
+        });
+       }
+
         document.querySelectorAll("[data-close-modal]").forEach(button => {
             button.addEventListener("click", function() {
                 const modalId = this.dataset.closeModal;
@@ -840,18 +1028,7 @@ require_once 'control/listar_especialidade.php';
             }
         });
 
-        // =====================================================
-        // FORMULÁRIOS DEMONSTRATIVOS
-        // =====================================================
 
-      
-
-        document.getElementById("specialtyForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            specialtyModal.classList.remove("show");
-            this.reset();
-            showToast("Especialidade cadastrada visualmente com sucesso!");
-        });
 
         // =====================================================
         // TOAST

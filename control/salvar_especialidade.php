@@ -11,7 +11,7 @@ $stmt->execute([
      ':nome' => $nome
 ]);
 
-header("location: listar_cards.php");
+header("location: ../index.php");
 exit();
 
 ?>

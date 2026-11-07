@@ -1,40 +1,50 @@
 <?php
-// Vitta Nexus - Agendamento do paciente
-// Esta versão usa horários de demonstração. A gravação no MySQL será ligada
-// depois que as tabelas reais de agenda/horários estiverem criadas.
-$especialidades = [
-    'Cardiologia',
-    'Neurologia',
-    'Pediatria',
-];
+require_once '../config/conexao.php';
 
-// Horários demonstrativos disponíveis por especialidade e dia da semana.
-// Depois, estes dados deverão vir do banco de dados.
-$disponibilidade = [
-    'Cardiologia' => [
-        'Segunda-feira' => ['08:00', '09:30', '14:00'],
-        'Terça-feira' => ['10:00', '11:00', '15:30'],
-        'Quarta-feira' => ['08:30', '13:00'],
-        'Quinta-feira' => ['09:00', '16:00'],
-        'Sexta-feira' => ['10:30', '14:30'],
-    ],
-    'Neurologia' => [
-        'Segunda-feira' => ['09:00', '13:30'],
-        'Terça-feira' => ['08:00', '14:00', '16:00'],
-        'Quarta-feira' => ['10:00', '15:00'],
-        'Quinta-feira' => ['08:30', '11:30'],
-        'Sexta-feira' => ['09:30', '13:00'],
-    ],
-    'Pediatria' => [
-        'Segunda-feira' => ['08:00', '10:00', '15:00'],
-        'Terça-feira' => ['09:30', '13:00'],
-        'Quarta-feira' => ['08:30', '11:00', '14:30'],
-        'Quinta-feira' => ['10:00', '15:30'],
-        'Sexta-feira' => ['08:00', '13:30'],
-    ],
+// 1. Buscar especialidades cadastradas no banco de dados
+$stmtEsp = $pdo->query("SELECT nome FROM especialidades ORDER BY nome ASC");
+$especialidades = $stmtEsp->fetchAll(PDO::FETCH_COLUMN);
+
+// 2. Mapeamento de dias da semana em inglês para português
+$diasMap = [
+    'Sunday' => 'Domingo',
+    'Monday' => 'Segunda-feira',
+    'Tuesday' => 'Terça-feira',
+    'Wednesday' => 'Quarta-feira',
+    'Thursday' => 'Quinta-feira',
+    'Friday' => 'Sexta-feira',
+    'Saturday' => 'Sábado'
 ];
 
 $dias = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira'];
+
+// 3. Buscar horários disponíveis na tabela horarios_disponiveis vinculados aos médicos e especialidades[cite: 30]
+$sqlHorarios = "SELECT h.id_horario, h.data_hora_inicio, e.nome AS especialidade 
+                FROM horarios_disponiveis h
+                JOIN medicos m ON h.id_medico = m.id_medico
+                JOIN especialidades e ON m.id_esp = e.id_esp
+                WHERE h.status = 'disponivel' AND h.data_hora_inicio >= NOW()
+                ORDER BY h.data_hora_inicio ASC";
+
+$stmtHorarios = $pdo->query($sqlHorarios);
+$todosHorarios = $stmtHorarios->fetchAll(PDO::FETCH_ASSOC);
+
+// Organizar no formato: [Especialidade][Dia da Semana] = [ { id: id_horario, hora: 'HH:MM' }, ... ][cite: 30]
+$disponibilidade = [];
+foreach ($todosHorarios as $h) {
+    $esp = $h['especialidade'];
+    $timestamp = strtotime($h['data_hora_inicio']);
+    $diaIngles = date('l', $timestamp);
+    $diaPt = $diasMap[$diaIngles] ?? $diaIngles;
+    
+    $hora = date('H:i', $timestamp);
+    
+    // Guardamos o id_horario do banco junto com a hora formatada[cite: 30]
+    $disponibilidade[$esp][$diaPt][] = [
+        'id' => $h['id_horario'],
+        'hora' => $hora
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -45,11 +55,11 @@ $dias = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../Administrador/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         .patient-content { padding: 32px 38px; }
         .patient-intro { max-width: 760px; }
-        .patient-notice { margin: 20px 0; padding: 13px 16px; border: 1px solid #f2d99a; border-radius: 10px; background: #fff8e7; color: #76551b; line-height: 1.55; font-size: 12px; }
+        .patient-notice { margin: 20px 0; padding: 13px 16px; border: 1px solid #99e4d7; border-radius: 10px; background: var(--primary-light); color: var(--primary-dark); line-height: 1.55; font-size: 12px; }
         .booking-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(250px, .75fr); gap: 22px; align-items: start; }
         .booking-panel, .summary-panel { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
         .booking-panel { padding: 26px; }
@@ -121,13 +131,13 @@ $dias = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta
                 </div>
             </section>
 
-            <div class="patient-notice"><strong>Atenção:</strong> esta é uma versão demonstrativa. Os horários são exemplos e o agendamento ainda não é salvo no banco de dados.</div>
+            <div class="patient-notice"><strong>Sistema Ativo:</strong> os horários exibidos abaixo vêm diretamente da agenda cadastrada pelos médicos no painel administrativo e são salvos com segurança no banco de dados.</div>
 
             <div class="booking-layout" id="agendar">
                 <section class="booking-panel">
                     <span class="panel-kicker">NOVO AGENDAMENTO</span>
                     <h2>Quando você gostaria de consultar?</h2>
-                    <p class="booking-subtitle">Só serão exibidos os horários cadastrados como disponíveis para a especialidade e o dia escolhidos.</p>
+                    <p class="booking-subtitle">Só serão exibidos os horários cadastrados como disponíveis para a especialidade e o dia escolhidos[cite: 30].</p>
 
                     <form class="booking-form" id="bookingForm">
                         <div class="field-group">
@@ -155,7 +165,7 @@ $dias = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta
                             <div class="time-options" id="timeOptions" role="radiogroup" aria-label="Horários disponíveis">
                                 <div class="no-slots">Escolha uma especialidade e um dia para consultar os horários.</div>
                             </div>
-                            <span class="field-hint">Horários sem disponibilidade não aparecem para seleção.</span>
+                            <span class="field-hint">Horários sem disponibilidade não aparecem para seleção[cite: 30].</span>
                         </div>
 
                         <button class="booking-button" id="bookingButton" type="submit" disabled>Confirmar escolha</button>
@@ -173,7 +183,7 @@ $dias = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta
                         <div class="summary-row"><span>Dia da semana</span><strong id="summaryWeekday">Não selecionado</strong></div>
                         <div class="summary-row"><span>Horário</span><strong id="summaryTime">Não selecionado</strong></div>
                     </div>
-                    <p class="summary-footnote">O agendamento real dependerá da integração com o banco de dados e da confirmação de que o horário continua livre no momento da gravação.</p>
+                    <p class="summary-footnote">O agendamento protege contra conflitos simultâneos através de transações seguras no banco de dados.</p>
                 </aside>
             </div>
 
@@ -217,23 +227,25 @@ function renderTimes() {
         return;
     }
 
-    times.forEach((time, index) => {
+    times.forEach((timeObj, index) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'time-option';
         const input = document.createElement('input');
         input.type = 'radio';
-        input.name = 'horario';
+        input.name = 'id_horario'; // Vinculado corretamente ao $_POST['id_horario'] do processamento
         input.id = 'time_' + index;
-        input.value = time;
+        input.value = timeObj.id; // Passa o id_horario real da tabela horarios_disponiveis
         input.required = true;
+        
         input.addEventListener('change', () => {
-            selectedTime = time;
+            selectedTime = timeObj.hora;
             bookingButton.disabled = false;
             updateSummary();
         });
+        
         const label = document.createElement('label');
         label.htmlFor = input.id;
-        label.textContent = time;
+        label.textContent = timeObj.hora;
         wrapper.append(input, label);
         timeOptions.appendChild(wrapper);
     });
@@ -243,20 +255,34 @@ function renderTimes() {
 specialty.addEventListener('change', renderTimes);
 weekday.addEventListener('change', renderTimes);
 
-document.getElementById('bookingForm').addEventListener('submit', (event) => {
+// Envio assíncrono conectado ao script de processamento salvar_agendamento.php
+document.getElementById('bookingForm').addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (!specialty.value || !weekday.value || !selectedTime) return;
+    
+    const formData = new FormData(event.target);
 
-    // Validação final contra a lista de horários disponíveis nesta versão.
-    const validTimes = (disponibilidade[specialty.value] && disponibilidade[specialty.value][weekday.value]) || [];
-    if (!validTimes.includes(selectedTime)) {
-        selectedTime = '';
-        renderTimes();
-        return;
+    try {
+        const resposta = await fetch('salvar_agendamento.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const dados = await resposta.json();
+
+        feedbackMessage.textContent = dados.mensagem;
+        feedbackMessage.className = 'feedback-message show ' + (dados.sucesso ? 'info' : '');
+
+        if (dados.sucesso) {
+            event.target.reset();
+            setTimeout(() => {
+                location.reload(); // Recarrega para remover o horário reservado da listagem
+            }, 2000);
+        }
+    } catch (erro) {
+        console.error("Erro ao agendar:", erro);
+        feedbackMessage.textContent = "Erro ao comunicar com o servidor.";
+        feedbackMessage.className = 'feedback-message show';
     }
-
-    feedbackMessage.textContent = 'Escolha validada para demonstração! Para concluir um agendamento real, esta tela ainda precisa ser conectada ao banco de dados.';
-    feedbackMessage.className = 'feedback-message show info';
 });
 </script>
 </body>

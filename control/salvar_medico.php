@@ -9,10 +9,10 @@ $crm = $_POST['crm'] ?? '';
 $email = $_POST['email'] ?? '';
 $senha = $_POST['senha'] ?? '';
 $id_esp = $_POST['id_esp'] ?? null;
-$telefone = $_POST['telefone'] ?? '';
+$celular = $_POST['celular'] ?? '';
 
 // Validação simples
-if (empty($nome) || empty($crm) || empty($email) || empty($senha) || empty($id_esp) || empty($telefone)  ) {
+if (empty($nome) || empty($crm) || empty($email) || empty($senha) || empty($id_esp) || empty($celular)  ) {
     echo json_encode(["sucesso" => false, "mensagem" => "Preencha todos os campos obrigatórios."]);
     exit;
 }
@@ -24,7 +24,7 @@ try {
     // Insere na tabela 'medicos' do seu banco vita_nexus
     $sql = "INSERT INTO medicos (nome, crm, email, senha_hash, id_esp) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$nome, $crm, $email, $senhaHash, $id_esp, $telefone]);
+    $stmt->execute([$nome, $crm, $email, $senhaHash, $id_esp, $celular]);
 
     echo json_encode(["sucesso" => true, "mensagem" => "Médico cadastrado com sucesso no banco!"]);
 
