@@ -1,7 +1,7 @@
 <?php
 // salvar_medico.php
 header('Content-Type: application/json; charset=utf-8');
-include 'config/conexao.php';
+include '../config/conexao.php';
 
 // Pega os dados enviados pelo formulário
 $nome = $_POST['nome'] ?? '';
@@ -21,8 +21,8 @@ try {
     // Criptografa a senha para gerar o senha_hash exigido no seu banco
     $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 
-    // Insere na tabela 'medicos' do seu banco vita_nexus
-    $sql = "INSERT INTO medicos (nome, crm, email, senha_hash, id_esp) VALUES (?, ?, ?, ?, ?, ?)";
+    // Insere na tabela 'medicos' incluindo a coluna celular e o 6º parâmetro (?)
+    $sql = "INSERT INTO medicos (nome, crm, email, senha_hash, id_esp, celular) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$nome, $crm, $email, $senhaHash, $id_esp, $celular]);
 
@@ -32,4 +32,3 @@ try {
     // Se der erro (ex: CRM ou E-mail duplicado)
     echo json_encode(["sucesso" => false, "mensagem" => "Erro ao salvar: " . $e->getMessage()]);
 }
-?>

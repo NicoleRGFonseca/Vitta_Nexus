@@ -1,7 +1,7 @@
 <?php
-// salvar_agendamento.php
+
 header('Content-Type: application/json; charset=utf-8');
-include '../config/conexao.php'; // Ajuste o caminho da conexão conforme necessário
+include '../config/conexao.php'; 
 
 // Dados enviados pelo formulário do paciente
 $id_horario = $_POST['id_horario'] ?? null;

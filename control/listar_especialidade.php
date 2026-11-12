@@ -1,9 +1,7 @@
 <?php
+// control/listar_especialidade.php
 require_once 'config/conexao.php';
 
-$sql = "SELECT m.*, e.nome AS nome_especialidade 
-        FROM medicos m 
-        JOIN especialidades e ON m.id_esp = e.id_esp";
-
+$sql = "SELECT id_esp, nome FROM especialidades ORDER BY nome ASC";
 $stmt = $pdo->query($sql);
 $especialidades = $stmt->fetchAll(PDO::FETCH_ASSOC);

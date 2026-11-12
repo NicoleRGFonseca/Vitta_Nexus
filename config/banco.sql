@@ -90,3 +90,5 @@ CREATE TABLE prontuarios (
     FOREIGN KEY (id_paciente)
         REFERENCES pacientes(id_paciente)
 );
+INSERT INTO administrador (email, senha_hash) VALUES 
+('admin@vittanexus.com', '$2y$10$KA1EkQpdMSuEu1K2izi6vecHa15pvY6FSoPOVk9LkVAEeIsj.zF8C');

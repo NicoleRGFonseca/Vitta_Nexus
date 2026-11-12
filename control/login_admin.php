@@ -1,12 +1,12 @@
 <?php
-// control/login_admin.php
+
 header('Content-Type: application/json; charset=utf-8');
 require_once '../config/conexao.php';
 
 $email = $_POST['email'] ?? '';
 $senha = $_POST['senha'] ?? '';
 
-// Defina aqui o único e-mail de administrador permitido
+
 $emailUnicoAdmin = "admin@vittanexus.com";
 
 if ($email !== $emailUnicoAdmin) {

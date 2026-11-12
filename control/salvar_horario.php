@@ -3,42 +3,68 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once '../config/conexao.php';
 
-$id_medico  = $_POST['id_medico'] ?? null;
-$data       = $_POST['data'] ?? '';
-$hora_inicio= $_POST['hora_inicio'] ?? '';
-$duracao    = (int)($_POST['duracao'] ?? 30);
+$id_medico = $_POST['id_medico'] ?? null;
+$meses     = (int)($_POST['meses'] ?? 3);
 
-if (empty($id_medico) || empty($data) || empty($hora_inicio)) {
-    echo json_encode(["sucesso" => false, "mensagem" => "Preencha todos os campos."]);
+if (empty($id_medico)) {
+    echo json_encode(["sucesso" => false, "mensagem" => "Selecione um médico."]);
     exit;
 }
 
 try {
-    // Monta a string de início em formato DATETIME
-    $startString = "$data $hora_inicio:00";
-    $dtInicio = new DateTime($startString);
-    
-    // Calcula o final somando a duração
-    $dtFim = clone $dtInicio;
-    $dtFim->modify("+$duracao minutes");
+    $dataInicio = new DateTime(); // Começa hoje
+    $dataFim = clone $dataInicio;
+    $dataFim->modify("+$meses months"); // Adiciona os meses escolhidos
 
-    $sql = "INSERT INTO horarios_disponiveis (id_medico, data_hora_inicio, data_hora_fim, status) 
+    $intervalo = new DateInterval('P1D');
+    $periodo = new DatePeriod($dataInicio, $intervalo, $dataFim);
+
+    $inseridos = 0;
+
+    // Prepara a query de inserção
+    $sql = "INSERT IGNORE INTO horarios_disponiveis (id_medico, data_hora_inicio, data_hora_fim, status) 
             VALUES (?, ?, ?, 'disponivel')";
-            
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        $id_medico,
-        $dtInicio->format('Y-m-d H:i:s'),
-        $dtFim->format('Y-m-d H:i:s')
+
+    foreach ($periodo as $data) {
+        $diaSemana = $data->format('N'); // 1 (Segunda) até 7 (Domingo)
+
+        // Apenas dias úteis (Segunda a Sexta: 1 a 5)
+        if ($diaSemana <= 5) {
+            $dataStr = $data->format('Y-m-d');
+            
+            // Horário de atendimento: das 07:00 às 17:00
+            $horaAtual = clone $data;
+            $horaAtual->setTime(7, 0, 0);
+
+            $horaLimite = clone $data;
+            $horaLimite->setTime(17, 0, 0);
+
+            while ($horaAtual < $horaLimite) {
+                $inicioSlot = clone $horaAtual;
+                $horaAtual->modify("+30 minutes");
+                $fimSlot = clone $horaAtual;
+
+                // Executa a inserção (INSERT IGNORE evita erro caso o horário já exista)
+                $stmt->execute([
+                    $id_medico,
+                    $inicioSlot->format('Y-m-d H:i:s'),
+                    $fimSlot->format('Y-m-d H:i:s')
+                ]);
+
+                if ($stmt->rowCount() > 0) {
+                    $inseridos++;
+                }
+            }
+        }
+    }
+
+    echo json_encode([
+        "sucesso" => true, 
+        "mensagem" => "Grade gerada com sucesso! Foram criados novos horários de segunda a sexta (07h às 17h)."
     ]);
 
-    echo json_encode(["sucesso" => true, "mensagem" => "Horário adicionado com sucesso!"]);
-
 } catch (PDOException $e) {
-    if ($e->getCode() == 23000) {
-        echo json_encode(["sucesso" => false, "mensagem" => "Este médico já possui esse horário cadastrado."]);
-    } else {
-        echo json_encode(["sucesso" => false, "mensagem" => "Erro ao salvar: " . $e->getMessage()]);
-    }
+    echo json_encode(["sucesso" => false, "mensagem" => "Erro ao gerar horários: " . $e->getMessage()]);
 }
-?>
+?>                 

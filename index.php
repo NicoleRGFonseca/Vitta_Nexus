@@ -143,7 +143,7 @@ require_once 'control/listar_especialidade.php';
                 </a>
 
                <a href="#horarios" class="nav-item" data-section="horarios">
-                  <span class="nav-icon">🕒</span>
+                  <span class="nav-icon"></span>
                   <span>Horários</span>
                </a>
 
@@ -700,7 +700,7 @@ require_once 'control/listar_especialidade.php';
         </main>
     </div>
 
-    <!-- ==================== MODAL DE HORÁRIOS ==================== -->
+   <!-- ==================== MODAL DE HORÁRIOS ==================== -->
 <div class="modal-overlay" id="scheduleModal">
     <div class="modal-card small-modal">
 
@@ -709,13 +709,13 @@ require_once 'control/listar_especialidade.php';
         <div class="modal-heading">
             <span class="modal-icon"></span>
             <div>
-                <span class="eyebrow">AGENDA</span>
-                <h2>Gerar Horários Disponíveis</h2>
-                <p>Abra um horário de atendimento na agenda de um médico.</p>
+                <span class="eyebrow">AGENDA AUTOMÁTICA</span>
+                <h2>Gerar Grade de Atendimento</h2>
+                <p>Gera os horários de segunda a sexta (07:00 às 17:00) de 30 em 30 minutos para o médico.</p>
             </div>
         </div>
 
-        <form id="scheduleForm" class="modal-form" method ="POST" action="control/salvar_horario.php">
+        <form id="scheduleForm" class="modal-form" method="POST" action="control/salvar_horario.php">
             <div class="form-group">
                 <label for="scheduleDoctor">Selecione o Médico</label>
                 <select id="scheduleDoctor" name="id_medico" required>
@@ -728,36 +728,24 @@ require_once 'control/listar_especialidade.php';
                 </select>
             </div>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="scheduleDate">Data do Atendimento</label>
-                    <input type="date" id="scheduleDate" name="data" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="scheduleTimeStart">Horário de Início</label>
-                    <input type="time" id="scheduleTimeStart" name="hora_inicio" required>
-                </div>
-            </div>
-
             <div class="form-group">
-                <label for="scheduleDuration">Duração da Consulta (Minutos)</label>
-                <select id="scheduleDuration" name="duracao">
-                    <option value="30" selected>30 minutos</option>
-                    <option value="45">45 minutos</option>
-                    <option value="60">1 hora</option>
+                <label for="mesesGerar">Gerar agenda para:</label>
+                <select id="mesesGerar" name="meses">
+                    <option value="1">Próximo 1 mês</option>
+                    <option value="3" selected>Próximos 3 meses</option>
+                    <option value="6">Próximos 6 meses</option>
+                    <option value="12">1 ano inteiro</option>
                 </select>
             </div>
 
             <div class="modal-actions">
                 <button type="button" class="outline-button" data-close-modal="scheduleModal">Cancelar</button>
-                <button type="submit" class="primary-button">Salvar Horário</button>
+                <button type="submit" class="primary-button">Gerar Grade Automática</button>
             </div>
         </form>
 
     </div>
 </div>
-
 
     <!-- ==================== MODAL MÉDICO ==================== -->
 
@@ -802,7 +790,7 @@ require_once 'control/listar_especialidade.php';
 
         <div class="form-group">
             <label for="doctorPhone">Telefone</label>
-            <input type="tel" id="doctorPhone" name="telefone" placeholder="(11) 99999-9999">
+            <input type="tel" id="doctorPhone" name="celular" placeholder="(11) 99999-9999">
         </div>
 
         <div class="form-group">
@@ -865,6 +853,74 @@ require_once 'control/listar_especialidade.php';
 
 
     <script>
+// =====================================================
+// CADASTRO DE ESPECIALIDADE VIA FETCH (SEM RECARREGAR A PÁGINA)
+// =====================================================
+const specialtyForm = document.getElementById("specialtyForm");
+
+if (specialtyForm) {
+    specialtyForm.addEventListener("submit", async function(event) {
+        event.preventDefault(); // Impede o recarregamento padrão
+
+        const formData = new FormData(specialtyForm);
+
+        try {
+            const resposta = await fetch("control/salvar_especialidade.php", {
+                method: "POST",
+                body: formData
+            });
+
+            const dados = await resposta.json();
+
+            if (dados.sucesso) {
+                // 1. Fecha o modal de especialidade
+                specialtyModal.classList.remove("show");
+                
+                // 2. Limpa o input do formulário
+                specialtyForm.reset();
+
+                // 3. Mostra o toast de sucesso
+                showToast(dados.mensagem);
+
+                // 4. Cria e adiciona o card na tela dinamicamente (sem dar F5!)
+                const specialtyGrid = document.querySelector(".specialty-grid");
+                const addSpecialtyCard = document.getElementById("addSpecialtyCard");
+
+                if (specialtyGrid && addSpecialtyCard) {
+                    const newCard = document.createElement("article");
+                    newCard.className = "specialty-card";
+                    
+                    // Protege contra caracteres especiais (XSS básico)
+                    const nomeSeguro = document.createElement('div');
+                    nomeSeguro.textContent = dados.nome;
+
+                    newCard.innerHTML = `
+                        <div class="specialty-card-icon">✚</div>
+                        <div>
+                            <h3>${nomeSeguro.innerHTML}</h3>
+                            <p>Cód: #${dados.id}</p>
+                        </div>
+                        <div class="specialty-footer">
+                            <span>Especialidade cadastrada</span>
+                            <button class="ghost-button" type="button">Editar</button>
+                        </div>
+                    `;
+
+                    // Insere o novo card logo antes do card de "Adicionar especialidade"
+                    specialtyGrid.insertBefore(newCard, addSpecialtyCard);
+                }
+
+            } else {
+                showToast(dados.mensagem);
+            }
+
+        } catch (erro) {
+            console.error("Erro ao cadastrar especialidade:", erro);
+            showToast("Erro de conexão com o servidor.");
+        }
+    });
+}
+
         // =====================================================
         const adminLoginForm = document.getElementById("adminLoginForm");
 const loginMessage = document.getElementById("loginMessage");
